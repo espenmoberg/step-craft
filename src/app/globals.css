@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --forest: #243528;
+    --cream: #f3ebda;
+    --cedar: #9a6b3a;
+    --amber: #d4a017;
+    --moss: #d9cfb5;
+    --parchment: #f7f1e4;
+    --stone: #a89a7c;
+    --ink: #1f241c;
+    --muted-ink: #5c6356;
+
+    --background: 42 35% 90%;
+    --foreground: 130 18% 16%;
+    --card: 40 40% 95%;
+    --card-foreground: 130 18% 16%;
+    --popover: 40 40% 95%;
+    --popover-foreground: 130 18% 16%;
+    --primary: 140 22% 18%;
+    --primary-foreground: 40 40% 94%;
+    --secondary: 40 28% 88%;
+    --secondary-foreground: 140 22% 18%;
+    --muted: 40 22% 86%;
+    --muted-foreground: 130 8% 38%;
+    --accent: 32 45% 42%;
+    --accent-foreground: 40 40% 96%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 140 12% 28% / 0.18;
+    --input: 140 12% 28% / 0.22;
+    --ring: 140 22% 28%;
+    --radius: 0.65rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
