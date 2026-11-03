@@ -126,10 +126,11 @@ export function SideDrawing({ geo }: Props) {
         />
       )}
 
-      {/* Endevange */}
+      {/* Endevange — light fill so the board reads as a thin band, not stray diagonals */}
       <polygon
         points={stringer}
-        fill="none"
+        fill={Ink.blue}
+        fillOpacity={0.06}
         stroke={Ink.line}
         strokeWidth={1.5}
       />
