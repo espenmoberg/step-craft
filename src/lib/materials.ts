@@ -18,7 +18,7 @@ export type ShopItem = {
 };
 
 export const SITE = {
-  place: "Nesøya, Asker",
+  place: "Hage",
   widthOuter: 1276,
   widthInner: 1180,
   treadWidth: 1164,
@@ -26,11 +26,10 @@ export const SITE = {
   railHeight: 900,
   stockStringer: 3890,
   stores: [
-    "Maxbo Nesbru (Vogellund 35)",
-    "Montér Asker (Skytterveien 121)",
-    "Maxbo Asker (Lensmannslia 22)",
-    "Maxbo Slemmestad",
-    "Byggmax Slemmestad",
+    "Maxbo",
+    "Montér",
+    "Byggmax",
+    "Byggmakker",
   ],
 };
 

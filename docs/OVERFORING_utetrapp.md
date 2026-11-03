@@ -1,4 +1,4 @@
-# Overføring: ny utetrapp i hagen (Nesøya, Asker)
+# Overføring: ny utetrapp i hagen
 
 Sammendrag av hele arbeidsøkten med Claude, til videre arbeid hos en annen agent eller person. Alle mål i mm.
 
@@ -57,9 +57,9 @@ Sammendrag av hele arbeidsøkten med Claude, til videre arbeid hos en annen agen
 - Setet ca. 213 under toppflaten. Mal 283 × 162,3, hypotenus 326,2. Lodd kapp 60,2° mot langside, vannrett kapp 29,8°.
 - Stolpeposisjoner, håndlistlengde og antall trinn/klosser (12 trinn = 24 bord og 24 klosser) må oppdateres.
 
-## 6. Butikker nær Nesøya
+## 6. Butikker
 
-Maxbo Nesbru (Vogellund 35), Montér Asker (Skytterveien 121), Maxbo Asker (Lensmannslia 22), Maxbo Slemmestad, Byggmax Slemmestad.
+Maxbo, Montér, Byggmax, Byggmakker (lokale byggevarehus).
 
 ## 7. Filer i denne pakken
 

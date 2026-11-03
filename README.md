@@ -1,6 +1,6 @@
-# Utetrapp (Nesøya)
+# Utetrapp
 
-Planleggingsverktøy for ny utetrapp med lukkede endevanger i hagen på Nesøya, Asker.
+Planleggingsverktøy for ny utetrapp med lukkede endevanger.
 
 Appen tar utgangspunkt i overføringen fra tidligere arbeid: mål på stedet (høyde 2110 mm, diagonal A–F 4015 mm), åpen beslutning om vangelengde, og full geometri/kappliste.
 

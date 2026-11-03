@@ -81,7 +81,7 @@ export function StairPlanner() {
       <header className="mx-auto flex w-full max-w-6xl items-end justify-between gap-6 px-5 pb-2 pt-8 sm:px-8 sm:pt-12">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-forest/70">
-            Nesøya · Asker
+            Utendørs · lukkede endevanger
           </p>
           <h1 className="font-display text-5xl leading-none tracking-tight text-forest sm:text-7xl">
             Utetrapp
@@ -394,7 +394,7 @@ export function StairPlanner() {
                   Innkjøpsliste
                 </CardTitle>
                 <CardDescription>
-                  Butikker nær Nesøya: {SITE.stores.join(" · ")}
+                  Butikker: {SITE.stores.join(" · ")}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -479,7 +479,7 @@ export function StairPlanner() {
       </main>
 
       <footer className="mx-auto max-w-6xl px-5 pb-12 pt-4 text-xs text-forest/50 sm:px-8">
-        Alle mål i mm. Geometri fra trappegeometri.py · prosjekt for hagen på Nesøya.
+        Alle mål i mm. Geometri fra trappegeometri.py.
       </footer>
     </div>
   );

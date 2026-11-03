@@ -21,9 +21,9 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Utetrapp · Nesøya",
+  title: "Utetrapp",
   description:
-    "Plan, tegninger og kappliste for ny utetrapp med lukkede endevanger i hagen på Nesøya.",
+    "Plan, tegninger og kappliste for ny utetrapp med lukkede endevanger.",
 };
 
 export default function RootLayout({
