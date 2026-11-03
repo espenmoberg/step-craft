@@ -8,10 +8,21 @@ Appen tar utgangspunkt i overføringen fra tidligere arbeid: mål på stedet (h�
 
 ```bash
 npm install
-npm run dev -- -p 3847
+npm run dev
 ```
 
 Åpne [http://localhost:3847](http://localhost:3847).
+
+## Deploy på GitHub Pages (telefon / deling)
+
+Appen bygges som statiske filer (`output: "export"`).
+
+1. Opprett et GitHub-repo og push `main` dit (f.eks. via **Create repo** i Cursor, eller speil dette prosjektet til GitHub).
+2. I repoet: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. Push til `main` (eller kjør workflowen manuelt under **Actions**).
+4. Etter et par minutter: `https://<brukernavn>.github.io/<repo>/`
+
+Workflow: `.github/workflows/pages.yml`.
 
 ## Hva appen gjør
 
