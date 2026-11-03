@@ -292,7 +292,7 @@ export function StairPlanner() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white/70">
+                <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white">
                   <SideDrawing geo={geo} />
                 </div>
               </CardContent>
@@ -307,7 +307,7 @@ export function StairPlanner() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white/70">
+                <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white">
                   <StringerDrawing geo={geo} />
                 </div>
                 <div className="mt-4 overflow-x-auto">
