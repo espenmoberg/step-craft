@@ -1,6 +1,7 @@
 "use client";
 
 import type { StairGeometry } from "@/lib/geometry";
+import { blockLengthForStep, STANDARD_BLOCK_MM } from "@/lib/blocks";
 import { Ink, fmt0, fmt1, pts } from "@/lib/draw-style";
 
 type Props = { geo: StairGeometry };
@@ -12,7 +13,6 @@ function boardOutline(
 ): string {
   const { points, params } = geo;
   const W = params.W;
-  // Inside face: B along top to E, down to F, seat to G, down to H, along bottom to C, to A, up to B
   return pts([
     [ux(points.B.u), vy(points.B.v)],
     [ux(points.E.u), vy(points.E.v)],
@@ -24,16 +24,17 @@ function boardOutline(
   ]);
 }
 
-function treadOnBoard(
+function treadAndBlock(
   geo: StairGeometry,
   uNose: number,
+  blockLen: number,
   ux: (u: number) => number,
   vy: (v: number) => number
 ) {
   const th = (geo.angleDeg * Math.PI) / 180;
   const s = Math.sin(th);
   const c = Math.cos(th);
-  const { d, KL, t } = geo.params;
+  const { d, t } = geo.params;
   const tread = [
     [uNose, t],
     [uNose + d * c, t + d * s],
@@ -42,8 +43,8 @@ function treadOnBoard(
   ] as Array<[number, number]>;
   const block = [
     [uNose - 48 * s, t + 48 * c],
-    [uNose + KL * c - 48 * s, t + 48 * c + KL * s],
-    [uNose + KL * c - 96 * s, t + 96 * c + KL * s],
+    [uNose + blockLen * c - 48 * s, t + 48 * c + blockLen * s],
+    [uNose + blockLen * c - 96 * s, t + 96 * c + blockLen * s],
     [uNose - 96 * s, t + 96 * c],
   ] as Array<[number, number]>;
   return {
@@ -54,67 +55,53 @@ function treadOnBoard(
 }
 
 /**
- * Vangetegning matching handover: overview + Detail A + Detail B.
+ * Vangetegning: oversikt + Detalj A/B med lesbare mål.
  */
 export function StringerDrawing({ geo }: Props) {
   const { params, points, noses, stringerLength, r, NT } = geo;
   const L = stringerLength;
   const W = params.W;
+  const lastBlock = blockLengthForStep(geo, NT - 1);
 
-  // --- Overview ---
-  const ovScale = 660 / L;
-  const ovOx = 40;
-  const ovOy = 110;
+  const ovScale = 640 / L;
+  const ovOx = 50;
+  const ovOy = 100;
   const ovUx = (u: number) => ovOx + u * ovScale;
   const ovVy = (v: number) => ovOy + v * ovScale;
 
-  // --- Detail A (lower) scale ~1.25 visual: map u 0..~450, v 0..198 into box ---
-  const dA = {
-    ox: 40,
-    oy: 230,
-    // show u from -20 to ~420, v 0..198
-    u0: -30,
-    u1: 420,
-    scale: 1.0, // px per mm — tuned below
-  };
-  dA.scale = 400 / (dA.u1 - dA.u0);
+  // Detail A: leave room left of the toe for A-label
+  const dA = { ox: 110, oy: 220, u0: -40, u1: 380, scale: 1 };
+  dA.scale = 360 / (dA.u1 - dA.u0);
   const dAUx = (u: number) => dA.ox + (u - dA.u0) * dA.scale;
   const dAVy = (v: number) => dA.oy + v * dA.scale;
 
-  // --- Detail B (upper) ---
-  const dB = {
-    ox: 40,
-    oy: 478,
-    u0: L - 520,
-    u1: L + 40,
-    scale: 1.0,
-  };
-  dB.scale = 380 / (dB.u1 - dB.u0);
+  const dB = { ox: 50, oy: 470, u0: L - 480, u1: L + 20, scale: 1 };
+  dB.scale = 400 / (dB.u1 - dB.u0);
   const dBUx = (u: number) => dB.ox + (u - dB.u0) * dB.scale;
   const dBVy = (v: number) => dB.oy + v * dB.scale;
 
   const labelEvery = noses.length > 12 ? 2 : 1;
+  const block0 = blockLengthForStep(geo, 0);
 
   return (
     <svg
-      viewBox="0 0 760 700"
+      viewBox="0 0 760 720"
       className="h-auto w-full bg-white"
       role="img"
       aria-label="Kapptegning for endevange"
       fontFamily="Helvetica, Arial, sans-serif"
       fontSize={11.5}
     >
-      <rect width="760" height="700" fill={Ink.bg} />
+      <rect width="760" height="720" fill={Ink.bg} />
 
-      <text x="24" y="30" fontSize={15} fontWeight={600} fill={Ink.text}>
-        Endevange 48×{W}: alle kapp- og merkemål fra brettets rette ende
+      <text x="24" y="26" fontSize={15} fontWeight={600} fill={Ink.text}>
+        Endevange 48×{W}: kapp- og merkemål fra rett ende
       </text>
-      <text x="24" y="50" fill={Ink.muted}>
-        Lengde {fmt0(L)}. u = langs overkant fra rett ende, v = ned fra overkant.
-        Innsiden vist.
+      <text x="24" y="46" fill={Ink.muted}>
+        Lengde {fmt0(L)} mm · u langs overkant · v ned fra overkant · innsiden
+        vist
       </text>
 
-      {/* Overview board */}
       <polygon
         points={boardOutline(geo, ovUx, ovVy)}
         fill="none"
@@ -123,7 +110,8 @@ export function StringerDrawing({ geo }: Props) {
       />
 
       {noses.map((u, i) => {
-        const { tread, block, nose } = treadOnBoard(geo, u, ovUx, ovVy);
+        const bl = blockLengthForStep(geo, i);
+        const { tread, block, nose } = treadAndBlock(geo, u, bl, ovUx, ovVy);
         return (
           <g key={i}>
             <polygon
@@ -155,44 +143,53 @@ export function StringerDrawing({ geo }: Props) {
         );
       })}
 
-      <text x="30" y="86" fill={Ink.text}>
-        Trinnese nr. 1–{NT} (u, 5 mm under overkant):
+      <text x="50" y="78" fill={Ink.text}>
+        Trinnese 1–{NT} (u, 5 mm under overkant)
       </text>
       <text
         x={ovUx(L / 2)}
-        y={ovOy + W * ovScale + 22}
+        y={ovOy + W * ovScale + 20}
         textAnchor="middle"
         fill={Ink.text}
       >
         {fmt0(L)}
       </text>
-
-      {/* Detail A */}
-      <text x="24" y="198" fontSize={13} fontWeight={600} fill={Ink.text}>
-        Detalj A – nedre ende (forstørret)
+      <text x="50" y={ovOy + W * ovScale + 38} fill={Ink.muted} fontSize={11}>
+        Sidekloss: {STANDARD_BLOCK_MM} mm fra nesa (flatt, 48 høy) · øverste
+        kloss {lastBlock} mm (før setekapp)
       </text>
 
-      {/* Cropped board piece for detail A */}
+      {/* —— Detalj A —— */}
+      <text x="24" y="195" fontSize={13} fontWeight={600} fill={Ink.text}>
+        Detalj A – nedre ende (fot)
+      </text>
+
       <polygon
         points={pts([
           [dAUx(points.B.u), dAVy(0)],
-          [dAUx(420), dAVy(0)],
-          [dAUx(420), dAVy(W)],
+          [dAUx(360), dAVy(0)],
+          [dAUx(360), dAVy(W)],
           [dAUx(points.C.u), dAVy(W)],
           [dAUx(points.A.u), dAVy(points.A.v)],
         ])}
-        fill="none"
+        fill="#fafafa"
         stroke={Ink.line}
         strokeWidth={1.25}
       />
       {(() => {
-        const { tread, block, nose } = treadOnBoard(geo, noses[0], dAUx, dAVy);
+        const { tread, block, nose } = treadAndBlock(
+          geo,
+          noses[0],
+          block0,
+          dAUx,
+          dAVy
+        );
         return (
           <g>
             <polygon
               points={tread}
               fill={Ink.blue}
-              fillOpacity={0.2}
+              fillOpacity={0.22}
               stroke={Ink.blue}
               strokeWidth={1}
             />
@@ -206,75 +203,85 @@ export function StringerDrawing({ geo }: Props) {
           </g>
         );
       })()}
+
+      {/* Dimension ticks on the end face for A */}
       <line
-        x1={dAUx(420)}
-        y1={dAVy(-4)}
-        x2={dAUx(420)}
-        y2={dAVy(W + 4)}
+        x1={dAUx(points.A.u) - 18}
+        y1={dAVy(0)}
+        x2={dAUx(points.A.u) - 18}
+        y2={dAVy(points.A.v)}
         stroke={Ink.dim}
         strokeWidth={1}
-        strokeDasharray="4 3"
       />
-
-      <text x={dAUx(points.B.u)} y={dA.oy - 10} fill={Ink.text}>
-        B: u {fmt0(points.B.u)} på overkant
-      </text>
-      <text x={dAUx(noses[0]) + 10} y={dA.oy - 10} fill={Ink.text}>
-        Nese 1: u {fmt0(noses[0])}, v {fmt0(params.t)}
-      </text>
+      <line
+        x1={dAUx(points.A.u) - 22}
+        y1={dAVy(0)}
+        x2={dAUx(points.A.u) - 14}
+        y2={dAVy(0)}
+        stroke={Ink.dim}
+        strokeWidth={1}
+      />
+      <line
+        x1={dAUx(points.A.u) - 22}
+        y1={dAVy(points.A.v)}
+        x2={dAUx(points.A.u) - 14}
+        y2={dAVy(points.A.v)}
+        stroke={Ink.dim}
+        strokeWidth={1}
+      />
       <text
-        x={dAUx(points.A.u) - 6}
-        y={dAVy(points.A.v) + 4}
+        x={dAUx(points.A.u) - 28}
+        y={(dAVy(0) + dAVy(points.A.v)) / 2 + 4}
         textAnchor="end"
         fill={Ink.text}
+        fontWeight={600}
       >
-        A: v {fmt0(points.A.v)} på enden
+        A · v {fmt0(points.A.v)}
+      </text>
+
+      <text x={dAUx(points.B.u) + 4} y={dA.oy - 8} fill={Ink.text}>
+        B · u {fmt0(points.B.u)} (overkant)
+      </text>
+      <text x={dAUx(noses[0]) + 8} y={dA.oy - 8} fill={Ink.blue}>
+        Nese 1 · u {fmt0(noses[0])}
       </text>
       <text
         x={dAUx(points.C.u)}
-        y={dAVy(W) + 18}
+        y={dAVy(W) + 16}
         textAnchor="middle"
         fill={Ink.text}
       >
-        C: u {fmt0(points.C.u)} på underkant
-      </text>
-      <text x="24" y={dA.oy + W * dA.scale + 36} fill={Ink.muted}>
-        B–A lodd, A–C vannrett (fot)
-      </text>
-      <line
-        x1={466}
-        y1={dA.oy + 90}
-        x2={dAUx(noses[0] + params.KL * 0.5)}
-        y2={dAVy(params.t + 72)}
-        stroke={Ink.dim}
-        strokeWidth={1}
-      />
-      <text x="470" y={dA.oy + 94} fill={Ink.muted}>
-        Kloss: fra nesa, {params.KL} lang, 48 under
+        C · u {fmt0(points.C.u)} (underkant)
       </text>
 
-      {/* Detail B */}
-      <text x="24" y="454" fontSize={13} fontWeight={600} fill={Ink.text}>
-        Detalj B – øvre ende med sete (forstørret)
+      <text x="24" y={dA.oy + W * dA.scale + 34} fill={Ink.muted}>
+        Kapp: B–A lodd · A–C vannrett (fot). Kloss {block0} mm fra nesa, 48 under
+        trinnoverside.
+      </text>
+
+      {/* —— Detalj B —— */}
+      <text x="24" y="448" fontSize={13} fontWeight={600} fill={Ink.text}>
+        Detalj B – øvre ende (sete)
       </text>
 
       <polygon
         points={pts([
-          [dBUx(dB.u0 + 20), dBVy(0)],
+          [dBUx(dB.u0 + 30), dBVy(0)],
           [dBUx(points.E.u), dBVy(0)],
           [dBUx(points.F.u), dBVy(W)],
           [dBUx(points.G.u), dBVy(points.G.v)],
           [dBUx(points.H.u), dBVy(W)],
-          [dBUx(dB.u0 + 20), dBVy(W)],
+          [dBUx(dB.u0 + 30), dBVy(W)],
         ])}
-        fill="none"
+        fill="#fafafa"
         stroke={Ink.line}
         strokeWidth={1.25}
       />
       {(() => {
-        const { tread, block, nose } = treadOnBoard(
+        const { tread, block, nose } = treadAndBlock(
           geo,
           noses[NT - 1],
+          lastBlock,
           dBUx,
           dBVy
         );
@@ -283,7 +290,7 @@ export function StringerDrawing({ geo }: Props) {
             <polygon
               points={tread}
               fill={Ink.blue}
-              fillOpacity={0.2}
+              fillOpacity={0.22}
               stroke={Ink.blue}
               strokeWidth={1}
             />
@@ -297,51 +304,42 @@ export function StringerDrawing({ geo }: Props) {
           </g>
         );
       })()}
-      <line
-        x1={dBUx(dB.u0 + 20)}
-        y1={dBVy(-4)}
-        x2={dBUx(dB.u0 + 20)}
-        y2={dBVy(W + 4)}
-        stroke={Ink.dim}
-        strokeWidth={1}
-        strokeDasharray="4 3"
-      />
 
-      <text x={dBUx(noses[NT - 1])} y={dB.oy - 10} fill={Ink.text}>
-        Nese {NT}: u {fmt0(noses[NT - 1])}
+      <text x={dBUx(noses[NT - 1])} y={dB.oy - 8} fill={Ink.blue}>
+        Nese {NT} · u {fmt0(noses[NT - 1])}
       </text>
-      <text x={dBUx(points.E.u) + 6} y={dB.oy + 4} fill={Ink.text}>
-        E: u {fmt0(points.E.u)} på overkant
+      <text x={dBUx(points.E.u) - 4} y={dB.oy - 8} textAnchor="end" fill={Ink.text}>
+        E · u {fmt0(points.E.u)}
       </text>
-      <text x={dBUx(points.F.u) + 6} y={dBVy(W) + 16} fill={Ink.text}>
-        F: u {fmt0(points.F.u)} på underkant
+      <text x={dBUx(points.F.u) + 4} y={dBVy(W) + 14} fill={Ink.text}>
+        F · u {fmt0(points.F.u)}
       </text>
       <text
         x={dBUx(points.H.u) - 4}
-        y={dBVy(W) + 16}
+        y={dBVy(W) + 14}
         textAnchor="end"
         fill={Ink.text}
       >
-        H: u {fmt0(points.H.u)} på underkant
+        H · u {fmt0(points.H.u)}
       </text>
-      <line
-        x1={466}
-        y1={dB.oy + 70}
-        x2={dBUx(points.G.u)}
-        y2={dBVy(points.G.v)}
-        stroke={Ink.dim}
-        strokeWidth={1}
-      />
-      <text x="470" y={dB.oy + 74} fill={Ink.text}>
-        G: u {fmt0(points.G.u)}, v {fmt0(points.G.v)}
-      </text>
-      <text x="44" y={dB.oy + W * dB.scale + 36} fill={Ink.muted}>
-        E–F lodd (endekapp), F–G vannrett (sete), G–H lodd
+      <text
+        x={dBUx(points.G.u)}
+        y={dBVy(points.G.v) - 6}
+        textAnchor="middle"
+        fill={Ink.text}
+      >
+        G · u {fmt0(points.G.u)} / v {fmt0(points.G.v)}
       </text>
 
-      <text x="24" y="688" fill={Ink.muted} fontSize={11}>
-        Mal: {params.g} × {fmt1(r)} (hypotenus {fmt1(geo.mal.hypot)}) · lodd kapp{" "}
-        {fmt1(geo.plumbCutDeg)}° · vannrett kapp {fmt1(geo.levelCutDeg)}°
+      <text x="24" y={dB.oy + W * dB.scale + 32} fill={Ink.muted}>
+        Kapp: E–F lodd · F–G sete · G–H lodd. Øverste kloss {lastBlock} mm
+        (stopper før H — ikke {STANDARD_BLOCK_MM}).
+      </text>
+
+      <text x="24" y="700" fill={Ink.muted} fontSize={11}>
+        Mal: {params.g} × {fmt1(r)} (hyp. {fmt1(geo.mal.hypot)}) · lodd{" "}
+        {fmt1(geo.plumbCutDeg)}° · vannrett {fmt1(geo.levelCutDeg)}° · kloss{" "}
+        {STANDARD_BLOCK_MM} mm standard
       </text>
     </svg>
   );

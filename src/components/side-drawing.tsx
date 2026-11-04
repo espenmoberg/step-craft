@@ -200,12 +200,12 @@ export function SideDrawing({ geo }: Props) {
         );
       })}
       <line
-        x1={toX(first.x - 60)}
+        x1={toX(first.x - 40)}
         y1={railY(first.y)}
-        x2={toX(last.x + 100)}
+        x2={toX(last.x + 80)}
         y2={railY(last.y)}
-        stroke={Ink.line}
-        strokeWidth={2}
+        stroke={Ink.dim}
+        strokeWidth={1.75}
       />
 
       {/* Dimensions — short, outside the stair */}

@@ -1,5 +1,6 @@
 import type { StairGeometry } from "./geometry";
 import { round0 } from "./geometry";
+import { STANDARD_BLOCK_MM, blockLengthForStep } from "./blocks";
 
 export type CutItem = {
   part: string;
@@ -74,10 +75,18 @@ export function buildCutList(geo: StairGeometry): CutItem[] {
     {
       part: "Sidekloss",
       dim: "48×73",
-      qty: blocks,
-      lengthMm: params.KL,
+      qty: Math.max(0, blocks - 2),
+      lengthMm: STANDARD_BLOCK_MM,
       impregnation: "AB",
       note: "Flatt, 48 høy, fra nesa og bakover",
+    },
+    {
+      part: "Sidekloss øverst (forkortet)",
+      dim: "48×73",
+      qty: 2,
+      lengthMm: blockLengthForStep(geo, geo.NT - 1),
+      impregnation: "AB",
+      note: `Stopper før setekapp (H). Ikke ${STANDARD_BLOCK_MM} mm.`,
     },
     {
       part: "Stolpe 1 og 3 (rekkverk + pæl)",
