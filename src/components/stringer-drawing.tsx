@@ -155,8 +155,7 @@ export function StringerDrawing({ geo }: Props) {
         {fmt0(L)}
       </text>
       <text x="50" y={ovOy + W * ovScale + 38} fill={Ink.muted} fontSize={11}>
-        Sidekloss: {STANDARD_BLOCK_MM} mm fra nesa (flatt, 48 høy) · øverste
-        kloss {lastBlock} mm (før setekapp)
+        Sidekloss: {block0} mm fra nesa (flatt, 48 høy) — samme på alle trinn
       </text>
 
       {/* —— Detalj A —— */}
@@ -332,8 +331,8 @@ export function StringerDrawing({ geo }: Props) {
       </text>
 
       <text x="24" y={dB.oy + W * dB.scale + 32} fill={Ink.muted}>
-        Kapp: E–F lodd · F–G sete · G–H lodd. Øverste kloss {lastBlock} mm
-        (stopper før H — ikke {STANDARD_BLOCK_MM}).
+        Kapp: E–F lodd · F–G sete · G–H lodd. Kloss {lastBlock} mm (samme som
+        øvrige).
       </text>
 
       <text x="24" y="700" fill={Ink.muted} fontSize={11}>
