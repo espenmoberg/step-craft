@@ -31,6 +31,7 @@ export function SideDrawing({ geo }: Props) {
   const F: XY = { x: world.xe, y: stone + world.ys };
   const G: XY = { x: world.xB, y: stone + world.ys };
   const H: XY = { x: world.xB, y: stone + ybot(world.xB) };
+  const hasSeat = params.SEAT > 0;
 
   const noses = world.noses.map((n) => ({
     x: n.x,
@@ -58,9 +59,10 @@ export function SideDrawing({ geo }: Props) {
   const treadH = Math.max(4.5, 48 * scale);
   const blockH = Math.max(4, 48 * scale);
 
-  // Stringer outline — same corner order as handover SVG
+  // Stringer outline: with seat notch A–C–H–G–F–E–B, without A–C–F–E–B
+  const stringerCorners = hasSeat ? [A, C, H, G, F, E, B] : [A, C, F, E, B];
   const stringer = pts(
-    [A, C, H, G, F, E, B].map((p) => [toX(p.x), toY(p.y)] as [number, number])
+    stringerCorners.map((p) => [toX(p.x), toY(p.y)] as [number, number])
   );
 
   const railY = (noseY: number) => toY(noseY + 900);

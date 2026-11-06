@@ -13,15 +13,20 @@ function boardOutline(
 ): string {
   const { points, params } = geo;
   const W = params.W;
-  return pts([
+  const hasSeat = params.SEAT > 0;
+  const corners: Array<[number, number]> = [
     [ux(points.B.u), vy(points.B.v)],
     [ux(points.E.u), vy(points.E.v)],
     [ux(points.F.u), vy(points.F.v)],
-    [ux(points.G.u), vy(points.G.v)],
-    [ux(points.H.u), vy(points.H.v)],
-    [ux(points.C.u), vy(W)],
-    [ux(points.A.u), vy(points.A.v)],
-  ]);
+  ];
+  if (hasSeat) {
+    corners.push(
+      [ux(points.G.u), vy(points.G.v)],
+      [ux(points.H.u), vy(points.H.v)]
+    );
+  }
+  corners.push([ux(points.C.u), vy(W)], [ux(points.A.u), vy(points.A.v)]);
+  return pts(corners);
 }
 
 function treadAndBlock(
@@ -260,7 +265,7 @@ export function StringerDrawing({ geo }: Props) {
 
       {/* —— Detalj B —— */}
       <text x="24" y="448" fontSize={13} fontWeight={600} fill={Ink.text}>
-        Detalj B – øvre ende (sete)
+        Detalj B – øvre ende (lodd kapp, uten innkutt)
       </text>
 
       <polygon
@@ -268,8 +273,6 @@ export function StringerDrawing({ geo }: Props) {
           [dBUx(dB.u0 + 30), dBVy(0)],
           [dBUx(points.E.u), dBVy(0)],
           [dBUx(points.F.u), dBVy(W)],
-          [dBUx(points.G.u), dBVy(points.G.v)],
-          [dBUx(points.H.u), dBVy(W)],
           [dBUx(dB.u0 + 30), dBVy(W)],
         ])}
         fill="#fafafa"
@@ -313,26 +316,10 @@ export function StringerDrawing({ geo }: Props) {
       <text x={dBUx(points.F.u) + 4} y={dBVy(W) + 14} fill={Ink.text}>
         F · u {fmt0(points.F.u)}
       </text>
-      <text
-        x={dBUx(points.H.u) - 4}
-        y={dBVy(W) + 14}
-        textAnchor="end"
-        fill={Ink.text}
-      >
-        H · u {fmt0(points.H.u)}
-      </text>
-      <text
-        x={dBUx(points.G.u)}
-        y={dBVy(points.G.v) - 6}
-        textAnchor="middle"
-        fill={Ink.text}
-      >
-        G · u {fmt0(points.G.u)} / v {fmt0(points.G.v)}
-      </text>
 
       <text x="24" y={dB.oy + W * dB.scale + 32} fill={Ink.muted}>
-        Kapp: E–F lodd · F–G sete · G–H lodd. Kloss {lastBlock} mm (samme som
-        øvrige).
+        Kapp: E–F lodd gjennom hele vangen (ingen sete/fuglenebb). Kloss{" "}
+        {lastBlock} mm (samme som øvrige).
       </text>
 
       <text x="24" y="700" fill={Ink.muted} fontSize={11}>

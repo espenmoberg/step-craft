@@ -24,7 +24,7 @@ export type StairParams = {
   t: number;
   /** Høyde på lodd kapp foran ved foten */
   FRONT: number;
-  /** Setelengde vannrett øverst */
+  /** Setelengde vannrett øverst (0 = ingen innkutt / fuglenebb) */
   SEAT: number;
   /** Klosslengde fra nesa og bakover */
   KL: number;
@@ -79,7 +79,7 @@ export const DEFAULT_PARAMS: StairParams = {
   W: 198,
   t: 5,
   FRONT: 100,
-  SEAT: 150,
+  SEAT: 0, // dropper innkutt/fuglenebb øverst — bare lodd endekapp
   KL: 200,
   stoneBase: 0,
 };
@@ -104,6 +104,7 @@ export function computeGeometry(params: StairParams): StairGeometry {
   const xb0 = (0 - ybot(0)) / k;
   const xe = (NT - 1) * g + d;
   const ys = ybot(xe);
+  // Med SEAT=0: ingen fuglenebb — G/H faller sammen med F (lodd ende).
   const xB = xe - SEAT;
 
   const bc0 = (x: number, y: number): [number, number] => [
@@ -116,13 +117,14 @@ export function computeGeometry(params: StairParams): StairGeometry {
     return { u: u - U0, v };
   };
 
+  const F = bc(xe, ys);
   const points = {
     A: bc(xf, 0),
     B: bc(xf, FRONT),
     C: bc(xb0, 0),
-    H: bc(xB, ybot(xB)),
-    G: bc(xB, ys),
-    F: bc(xe, ys),
+    H: SEAT > 0 ? bc(xB, ybot(xB)) : F,
+    G: SEAT > 0 ? bc(xB, ys) : F,
+    F,
     E: bc(xe, ytop(xe)),
   };
 

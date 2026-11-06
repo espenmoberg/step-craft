@@ -166,8 +166,11 @@ export function StairPlanner() {
                       </tr>
                     </thead>
                     <tbody>
-                      {(["A", "B", "C", "H", "G", "F", "E"] as const).map(
-                        (k) => (
+                      {(
+                        (params.SEAT > 0
+                          ? (["A", "B", "C", "H", "G", "F", "E"] as const)
+                          : (["A", "B", "C", "F", "E"] as const))
+                      ).map((k) => (
                           <tr key={k} className="border-b border-forest/8">
                             <td className="py-1.5 pr-3 font-semibold">{k}</td>
                             <td className="py-1.5 pr-3">
@@ -283,7 +286,7 @@ export function StairPlanner() {
                   Montering
                 </CardTitle>
                 <CardDescription>
-                  Kort rekkefølge. Vangekapp (fot, sete, hjørner) tas med
+                  Kort rekkefølge. Vangekapp (fot og lodd ende) tas med
                   stikksag / håndsirkelsag — ikke kappsag.
                 </CardDescription>
               </CardHeader>
