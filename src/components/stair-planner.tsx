@@ -92,7 +92,7 @@ export function StairPlanner() {
         </div>
         <div className="hidden text-right sm:block">
           <p className="font-mono text-xs text-forest/60">mål på stedet</p>
-          <p className="font-mono text-sm text-forest">H 2110 · diag. 4015</p>
+          <p className="font-mono text-sm text-forest">33,4° · B→nese 3800</p>
         </div>
       </header>
 
@@ -115,8 +115,10 @@ export function StairPlanner() {
             )}
           </div>
           <p className="mb-6 max-w-3xl text-sm leading-relaxed text-forest/75 sm:text-base">
-            13 opptrinn passer høyde og diagonal, men vangen blir ca.{" "}
-            {round0(longGeo.stringerLength)} mm — den korteste innkjøpte planken er{" "}
+            Ny måling: 33,4° og 3800 mm fra punkt B til øverste nese → 13 opptrinn
+            à {round1(longGeo.r)} / inntrinn {OPTION_LONG_STRINGER.g}, trinndybde{" "}
+            {OPTION_LONG_STRINGER.d} (148+98). Vangen blir ca.{" "}
+            {round0(longGeo.stringerLength)} mm — lagerplanken er{" "}
             {STOCK_STRINGER_MM} mm. Skjøting frarådes. Velg én vei; tegninger og
             lister oppdateres med en gang.
           </p>
@@ -146,8 +148,8 @@ export function StairPlanner() {
                   <p
                     className={`mt-1 text-sm ${choice === "long" ? "text-cream/80" : "text-forest/70"}`}
                   >
-                    13 tre-opptrinn à {round1(longGeo.r)} mm. Best match mot målt
-                    diagonal. Bytt 3,89 m-planken til 4,2 eller 4,8 m.
+                    13 tre-opptrinn à {round1(longGeo.r)} mm. Matcher 33,4° og
+                    B→nese 3800. Bytt 3,89 m-planken til 4,2 eller 4,8 m.
                   </p>
                 </div>
               </div>
@@ -172,7 +174,7 @@ export function StairPlanner() {
                 </div>
                 <div>
                   <dt>Trinnbord</dt>
-                  <dd>12 × 2 × 48×148</dd>
+                  <dd>12 × (148+98)</dd>
                 </div>
               </dl>
             </label>
@@ -226,7 +228,7 @@ export function StairPlanner() {
                 </div>
                 <div>
                   <dt>Trinnbord</dt>
-                  <dd>11 × 2 × 48×148</dd>
+                  <dd>11 × (148+98)</dd>
                 </div>
               </dl>
             </label>

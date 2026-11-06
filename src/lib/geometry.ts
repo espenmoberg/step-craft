@@ -66,11 +66,16 @@ export type StairGeometry = {
 
 export const STOCK_STRINGER_MM = 3890;
 
+/**
+ * Målt på stedet: 33,4° og 3800 mm fra punkt B til nese på øverste trinn.
+ * 13 opptrinn → H ≈ 2370, inntrinn 277, formel ≈ 641. Trinndybde 250 (148+98)
+ * fordi 300 ikke får plass i 48×198 ved denne vinkelen.
+ */
 export const DEFAULT_PARAMS: StairParams = {
-  H: 2110,
+  H: 2370,
   n: 13,
-  g: 283,
-  d: 300,
+  g: 277,
+  d: 250,
   W: 198,
   t: 5,
   FRONT: 100,
@@ -79,7 +84,7 @@ export const DEFAULT_PARAMS: StairParams = {
   stoneBase: 0,
 };
 
-/** Alternativ A: 13 tre-opptrinn, krever lengre vangeplanke */
+/** Alternativ A: 13 tre-opptrinn, krever lengre vangeplanke (~4,2 m) */
 export const OPTION_LONG_STRINGER: StairParams = {
   ...DEFAULT_PARAMS,
   n: 13,
@@ -90,7 +95,7 @@ export const OPTION_LONG_STRINGER: StairParams = {
 export const OPTION_STONE_BASE: StairParams = {
   ...DEFAULT_PARAMS,
   n: 12,
-  stoneBase: Math.round((2110 / 13) * 10) / 10, // 162.3
+  stoneBase: Math.round((2370 / 13) * 10) / 10, // 182.3
 };
 
 function computeWoodHeight(p: StairParams): number {

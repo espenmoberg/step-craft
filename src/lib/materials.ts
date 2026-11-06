@@ -45,6 +45,13 @@ export function buildCutList(geo: StairGeometry): CutItem[] {
       ? `Steinblokk/helle ${round0(params.stoneBase)} mm som første opptrinn`
       : undefined;
 
+  const treadDepth = params.d;
+  const rearDim = treadDepth >= 300 ? "48×148" : "48×98";
+  const rearNote =
+    treadDepth >= 300
+      ? "2 × 48×148 = 300 dybde med 4 mm fuge"
+      : `48×148 + 48×98 = ${treadDepth} dybde (passer 48×198 ved ${round0(geo.angleDeg)}°)`;
+
   const items: CutItem[] = [
     {
       part: "Endevange",
@@ -66,11 +73,11 @@ export function buildCutList(geo: StairGeometry): CutItem[] {
     },
     {
       part: "Trinnbord bakre",
-      dim: "48×148",
+      dim: rearDim,
       qty: treads,
       lengthMm: SITE.treadWidth,
       impregnation: "AB",
-      note: "2 × 48×148 = 300 dybde med 4 mm fuge",
+      note: rearNote,
     },
     {
       part: "Sidekloss",
@@ -151,9 +158,21 @@ export function buildShopList(geo: StairGeometry): ShopItem[] {
         : `Kapp til ${stringer} mm`,
     },
     {
-      item: "Trinnbord 48×148 AB",
-      qty: `${treads * 2} × ${SITE.treadWidth} mm (kjøp med margin)`,
+      item: "Trinnbord 48×148 AB (fremre)",
+      qty: `${treads} × ${SITE.treadWidth} mm (kjøp med margin)`,
       where: "Maxbo",
+    },
+    {
+      item:
+        geo.params.d >= 300
+          ? "Trinnbord 48×148 AB (bakre)"
+          : "Trinnbord 48×98 AB (bakre)",
+      qty: `${treads} × ${SITE.treadWidth} mm (kjøp med margin)`,
+      where: "Maxbo",
+      note:
+        geo.params.d >= 300
+          ? "Samme dimensjon som fremre — totalt 300 dybde"
+          : `Smalere bakre bord — totalt ${geo.params.d} dybde (plass i vangen ved 33,4°)`,
     },
     {
       item: "Sideklossemateriale 48×73 eller 48×98 (kappes)",
@@ -212,7 +231,7 @@ export const ASSEMBLY_STEPS = [
 
 export const DECISIONS = [
   "Lukkede endevanger (ikke sagtann), ingen midtvange",
-  "Vange 48×198, trinn 2×48×148 (dybde 300), 8 mm luft mot vange",
+  "Vange 48×198, trinn 48×148 + 48×98 (dybde 250), 8 mm luft mot vange",
   "Fot og sete vannrett kappet – vekt går rett ned",
   "Pæler Ø76 klasse A i stedet for støp/nye heller",
   "Rekkverk kun høyre side (sett oppover)",

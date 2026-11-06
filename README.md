@@ -2,7 +2,7 @@
 
 Planleggingsverktøy for ny utetrapp med lukkede endevanger.
 
-Appen tar utgangspunkt i overføringen fra tidligere arbeid: mål på stedet (høyde 2110 mm, diagonal A–F 4015 mm), åpen beslutning om vangelengde, og full geometri/kappliste.
+Appen tar utgangspunkt i målt stigning **33,4°** og **3800 mm** fra punkt B til nese på øverste trinn → **13 opptrinn**, inntrinn 277 mm, trinndybde 250 mm (148+98), åpen beslutning om vangelengde, og full geometri/kappliste.
 
 ## Kjør lokalt
 
