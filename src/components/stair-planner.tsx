@@ -1,16 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
-  OPTION_LONG_STRINGER,
-  OPTION_STONE_BASE,
+  DEFAULT_PARAMS,
   STOCK_STRINGER_MM,
   computeGeometry,
-  fitsStock,
   round0,
   round1,
   shortfall,
-  type StairParams,
 } from "@/lib/geometry";
 import {
   ASSEMBLY_STEPS,
@@ -21,8 +18,6 @@ import {
 } from "@/lib/materials";
 import { SideDrawing } from "@/components/side-drawing";
 import { StringerDrawing } from "@/components/stringer-drawing";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -30,44 +25,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type Choice = "long" | "stone" | null;
-
-const STORAGE_KEY = "utetrapp-valg";
-
 export function StairPlanner() {
-  const [choice, setChoice] = useState<Choice>(null);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY) as Choice | null;
-    if (saved === "long" || saved === "stone") setChoice(saved);
-    setHydrated(true);
-  }, []);
-
-  const params: StairParams = useMemo(() => {
-    if (choice === "stone") return OPTION_STONE_BASE;
-    return OPTION_LONG_STRINGER;
-  }, [choice]);
-
-  const geo = useMemo(() => computeGeometry(params), [params]);
+  const params = DEFAULT_PARAMS;
+  const geo = useMemo(() => computeGeometry(params), []);
   const cutList = useMemo(() => buildCutList(geo), [geo]);
   const shopList = useMemo(() => buildShopList(geo), [geo]);
-  const okStock = fitsStock(geo.stringerLength);
   const missing = shortfall(geo.stringerLength);
-
-  function select(next: Choice) {
-    setChoice(next);
-    if (next) window.localStorage.setItem(STORAGE_KEY, next);
-    else window.localStorage.removeItem(STORAGE_KEY);
-  }
-
-  const longGeo = useMemo(() => computeGeometry(OPTION_LONG_STRINGER), []);
-  const stoneGeo = useMemo(() => computeGeometry(OPTION_STONE_BASE), []);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -97,163 +63,43 @@ export function StairPlanner() {
       </header>
 
       <main className="mx-auto w-full max-w-6xl space-y-8 px-5 py-8 sm:px-8">
-        {/* Decision */}
         <section className="animate-rise rounded-2xl border border-forest/15 bg-cream/80 p-5 shadow-[0_20px_60px_-40px_rgba(30,40,25,0.55)] backdrop-blur-sm sm:p-8">
-          <div className="mb-5 flex flex-wrap items-center gap-3">
-            <h2 className="font-display text-2xl text-forest sm:text-3xl">
-              Velg vangeløsning
-            </h2>
-            {!choice && hydrated && (
-              <Badge className="bg-amber text-ink hover:bg-amber">
-                Åpen beslutning
-              </Badge>
-            )}
-            {choice && (
-              <Badge variant="secondary" className="bg-forest text-cream">
-                Valgt: {choice === "long" ? "lengre planke" : "steinblokk nederst"}
-              </Badge>
-            )}
-          </div>
-          <p className="mb-6 max-w-3xl text-sm leading-relaxed text-forest/75 sm:text-base">
-            Ny måling: 33,4° og 3800 mm fra punkt B til øverste nese → 13 opptrinn
-            à {round1(longGeo.r)} / inntrinn {OPTION_LONG_STRINGER.g}, trinndybde{" "}
-            {OPTION_LONG_STRINGER.d} (148+98). Vangen blir ca.{" "}
-            {round0(longGeo.stringerLength)} mm — lagerplanken er{" "}
-            {STOCK_STRINGER_MM} mm. Skjøting frarådes. Velg én vei; tegninger og
-            lister oppdateres med en gang.
+          <h2 className="font-display text-2xl text-forest sm:text-3xl">
+            Vangeløsning
+          </h2>
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-forest/75 sm:text-base">
+            33,4° og 3800 mm fra punkt B til øverste nese → 13 opptrinn à{" "}
+            {round1(geo.r)} / inntrinn {params.g}, trinndybde {params.d}{" "}
+            (148+98). Vange {round0(geo.stringerLength)} mm — kjøp 4,2 eller 4,8
+            m (lagerplanken {STOCK_STRINGER_MM} mm er {round0(missing)} mm for
+            kort). Skjøting frarådes.
           </p>
-
-          <RadioGroup
-            value={choice ?? ""}
-            onValueChange={(v) => select(v as Choice)}
-            className="grid gap-4 md:grid-cols-2"
-          >
-            <label
-              htmlFor="opt-long"
-              className={`group cursor-pointer rounded-xl border p-5 transition duration-300 ${
-                choice === "long"
-                  ? "border-forest bg-forest text-cream shadow-lg"
-                  : "border-forest/20 bg-cream/60 hover:border-forest/40"
-              }`}
-            >
-              <div className="mb-3 flex items-start gap-3">
-                <RadioGroupItem value="long" id="opt-long" className="mt-1" />
-                <div>
-                  <Label
-                    htmlFor="opt-long"
-                    className={`font-display text-xl ${choice === "long" ? "text-cream" : "text-forest"}`}
-                  >
-                    A · Kjøp lengre vange
-                  </Label>
-                  <p
-                    className={`mt-1 text-sm ${choice === "long" ? "text-cream/80" : "text-forest/70"}`}
-                  >
-                    13 tre-opptrinn à {round1(longGeo.r)} mm. Matcher 33,4° og
-                    B→nese 3800. Bytt 3,89 m-planken til 4,2 eller 4,8 m.
-                  </p>
-                </div>
-              </div>
-              <dl
-                className={`mt-4 grid grid-cols-2 gap-2 font-mono text-xs ${choice === "long" ? "text-cream/85" : "text-forest/75"}`}
-              >
-                <div>
-                  <dt>Vange</dt>
-                  <dd className="text-sm font-semibold">
-                    {round0(longGeo.stringerLength)} mm
-                  </dd>
-                </div>
-                <div>
-                  <dt>Mangler på lager</dt>
-                  <dd className="text-sm font-semibold">
-                    +{round0(shortfall(longGeo.stringerLength))} mm
-                  </dd>
-                </div>
-                <div>
-                  <dt>Stigning</dt>
-                  <dd>{round1(longGeo.angleDeg)}° · formel {round0(longGeo.formula)}</dd>
-                </div>
-                <div>
-                  <dt>Trinnbord</dt>
-                  <dd>12 × (148+98)</dd>
-                </div>
-              </dl>
-            </label>
-
-            <label
-              htmlFor="opt-stone"
-              className={`group cursor-pointer rounded-xl border p-5 transition duration-300 ${
-                choice === "stone"
-                  ? "border-forest bg-forest text-cream shadow-lg"
-                  : "border-forest/20 bg-cream/60 hover:border-forest/40"
-              }`}
-            >
-              <div className="mb-3 flex items-start gap-3">
-                <RadioGroupItem value="stone" id="opt-stone" className="mt-1" />
-                <div>
-                  <Label
-                    htmlFor="opt-stone"
-                    className={`font-display text-xl ${choice === "stone" ? "text-cream" : "text-forest"}`}
-                  >
-                    B · Steinblokk nederst
-                  </Label>
-                  <p
-                    className={`mt-1 text-sm ${choice === "stone" ? "text-cream/80" : "text-forest/70"}`}
-                  >
-                    Første opptrinn ({round1(OPTION_STONE_BASE.stoneBase)} mm) som
-                    helle/stein på gangveien. Tretrappa starter der — vange passer
-                    3,89 m.
-                  </p>
-                </div>
-              </div>
-              <dl
-                className={`mt-4 grid grid-cols-2 gap-2 font-mono text-xs ${choice === "stone" ? "text-cream/85" : "text-forest/75"}`}
-              >
-                <div>
-                  <dt>Vange</dt>
-                  <dd className="text-sm font-semibold">
-                    {round0(stoneGeo.stringerLength)} mm
-                  </dd>
-                </div>
-                <div>
-                  <dt>Margin på lager</dt>
-                  <dd className="text-sm font-semibold">
-                    {STOCK_STRINGER_MM - round0(stoneGeo.stringerLength)} mm
-                  </dd>
-                </div>
-                <div>
-                  <dt>Stigning</dt>
-                  <dd>
-                    {round1(stoneGeo.angleDeg)}° · formel {round0(stoneGeo.formula)}
-                  </dd>
-                </div>
-                <div>
-                  <dt>Trinnbord</dt>
-                  <dd>11 × (148+98)</dd>
-                </div>
-              </dl>
-            </label>
-          </RadioGroup>
-
-          {choice && (
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => select(null)}
-                className="border-forest/30 text-forest"
-              >
-                Nullstill valg
-              </Button>
-              <p className="font-mono text-xs text-forest/60">
-                {okStock
-                  ? `Vange ${round0(geo.stringerLength)} mm passer lagerplanken`
-                  : `Vange ${round0(geo.stringerLength)} mm — mangler ${round0(missing)} mm på 3,89 m`}
-              </p>
+          <dl className="mt-5 grid grid-cols-2 gap-3 font-mono text-xs text-forest/75 sm:grid-cols-4">
+            <div>
+              <dt>Vange</dt>
+              <dd className="text-sm font-semibold text-forest">
+                {round0(geo.stringerLength)} mm
+              </dd>
             </div>
-          )}
+            <div>
+              <dt>Mangler på 3,89 m</dt>
+              <dd className="text-sm font-semibold text-forest">
+                +{round0(missing)} mm
+              </dd>
+            </div>
+            <div>
+              <dt>Stigning</dt>
+              <dd className="text-sm text-forest">
+                {round1(geo.angleDeg)}° · formel {round0(geo.formula)}
+              </dd>
+            </div>
+            <div>
+              <dt>Trinnbord</dt>
+              <dd className="text-sm text-forest">12 × (148+98)</dd>
+            </div>
+          </dl>
         </section>
 
-        {/* Summary metrics */}
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: "Opptrinn", value: `${params.n} × ${round1(geo.r)}` },
@@ -289,9 +135,7 @@ export function StairPlanner() {
                 <CardTitle className="font-display text-xl text-forest">
                   Sidetegning
                 </CardTitle>
-                <CardDescription>
-                  Oppdatert for valgt løsning. Mål i mm.
-                </CardDescription>
+                <CardDescription>Mål i mm.</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white">
@@ -322,13 +166,19 @@ export function StairPlanner() {
                       </tr>
                     </thead>
                     <tbody>
-                      {(["A", "B", "C", "H", "G", "F", "E"] as const).map((k) => (
-                        <tr key={k} className="border-b border-forest/8">
-                          <td className="py-1.5 pr-3 font-semibold">{k}</td>
-                          <td className="py-1.5 pr-3">{round0(geo.points[k].u)}</td>
-                          <td className="py-1.5">{round0(geo.points[k].v)}</td>
-                        </tr>
-                      ))}
+                      {(["A", "B", "C", "H", "G", "F", "E"] as const).map(
+                        (k) => (
+                          <tr key={k} className="border-b border-forest/8">
+                            <td className="py-1.5 pr-3 font-semibold">{k}</td>
+                            <td className="py-1.5 pr-3">
+                              {round0(geo.points[k].u)}
+                            </td>
+                            <td className="py-1.5">
+                              {round0(geo.points[k].v)}
+                            </td>
+                          </tr>
+                        )
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -350,8 +200,8 @@ export function StairPlanner() {
                   Kappliste
                 </CardTitle>
                 <CardDescription>
-                  Bredde utvendig {SITE.widthOuter}, mellom vanger {SITE.widthInner},
-                  trinn {SITE.treadWidth} (8 mm luft).
+                  Bredde utvendig {SITE.widthOuter}, mellom vanger{" "}
+                  {SITE.widthInner}, trinn {SITE.treadWidth} (8 mm luft).
                 </CardDescription>
               </CardHeader>
               <CardContent className="overflow-x-auto">
@@ -370,8 +220,12 @@ export function StairPlanner() {
                     {cutList.map((row) => (
                       <tr key={row.part} className="border-b border-forest/10">
                         <td className="py-2.5 pr-3 font-medium">{row.part}</td>
-                        <td className="py-2.5 pr-3 font-mono text-xs">{row.dim}</td>
-                        <td className="py-2.5 pr-3 font-mono text-xs">{row.qty}</td>
+                        <td className="py-2.5 pr-3 font-mono text-xs">
+                          {row.dim}
+                        </td>
+                        <td className="py-2.5 pr-3 font-mono text-xs">
+                          {row.qty}
+                        </td>
                         <td className="py-2.5 pr-3 font-mono text-xs">
                           {row.lengthMm}
                         </td>
@@ -407,7 +261,9 @@ export function StairPlanner() {
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <p className="font-medium text-forest">{item.item}</p>
-                      <p className="font-mono text-xs text-forest/70">{item.qty}</p>
+                      <p className="font-mono text-xs text-forest/70">
+                        {item.qty}
+                      </p>
                     </div>
                     {(item.where || item.note) && (
                       <p className="mt-1 text-xs text-forest/60">
@@ -427,8 +283,8 @@ export function StairPlanner() {
                   Montering
                 </CardTitle>
                 <CardDescription>
-                  Kort rekkefølge. Vangekapp (fot, sete, hjørner) tas med stikksag /
-                  håndsirkelsag — ikke kappsag.
+                  Kort rekkefølge. Vangekapp (fot, sete, hjørner) tas med
+                  stikksag / håndsirkelsag — ikke kappsag.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -471,8 +327,8 @@ export function StairPlanner() {
                 <Separator className="my-4 bg-forest/10" />
                 <p className="text-sm text-forest/70">
                   Festemidler: terrasseskrue A4 5×90 i trinn, A4 5×100 i klosser,
-                  A4 6×140 i håndlist, låseskrue M10×140 VF for stolper/pæler (hode
-                  på innsiden). Ikke elforsinket.
+                  A4 6×140 i håndlist, låseskrue M10×140 VF for stolper/pæler
+                  (hode på innsiden). Ikke elforsinket.
                 </p>
               </CardContent>
             </Card>

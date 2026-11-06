@@ -84,20 +84,6 @@ export const DEFAULT_PARAMS: StairParams = {
   stoneBase: 0,
 };
 
-/** Alternativ A: 13 tre-opptrinn, krever lengre vangeplanke (~4,2 m) */
-export const OPTION_LONG_STRINGER: StairParams = {
-  ...DEFAULT_PARAMS,
-  n: 13,
-  stoneBase: 0,
-};
-
-/** Alternativ B: steinblokk som første opptrinn, 12 i tre, passer 3,89 m */
-export const OPTION_STONE_BASE: StairParams = {
-  ...DEFAULT_PARAMS,
-  n: 12,
-  stoneBase: Math.round((2370 / 13) * 10) / 10, // 182.3
-};
-
 function computeWoodHeight(p: StairParams): number {
   return p.H - p.stoneBase;
 }

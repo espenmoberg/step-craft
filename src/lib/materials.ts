@@ -231,6 +231,7 @@ export const ASSEMBLY_STEPS = [
 
 export const DECISIONS = [
   "Lukkede endevanger (ikke sagtann), ingen midtvange",
+  "13 tre-opptrinn — kjøp lengre vange (4,2/4,8 m), ikke steinblokk nederst",
   "Vange 48×198, trinn 48×148 + 48×98 (dybde 250), 8 mm luft mot vange",
   "Fot og sete vannrett kappet – vekt går rett ned",
   "Pæler Ø76 klasse A i stedet for støp/nye heller",

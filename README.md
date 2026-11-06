@@ -2,7 +2,7 @@
 
 Planleggingsverktøy for ny utetrapp med lukkede endevanger.
 
-Appen tar utgangspunkt i målt stigning **33,4°** og **3800 mm** fra punkt B til nese på øverste trinn → **13 opptrinn**, inntrinn 277 mm, trinndybde 250 mm (148+98), åpen beslutning om vangelengde, og full geometri/kappliste.
+Appen tar utgangspunkt i målt stigning **33,4°** og **3800 mm** fra punkt B til nese på øverste trinn → **13 opptrinn**, inntrinn 277 mm, trinndybde 250 mm (148+98), vange ca. 4,16 m (kjøp 4,2/4,8 m), og full geometri/kappliste.
 
 ## Kjør lokalt
 
@@ -26,11 +26,8 @@ Workflow: `.github/workflows/pages.yml`.
 
 ## Hva appen gjør
 
-1. **Velg vangeløsning**
-   - **A:** 13 tre-opptrinn — kjøp lengre vangeplanke (4,2/4,8 m)
-   - **B:** Steinblokk som første opptrinn — beholde 3,89 m-planken
+1. Viser geometri for **13 tre-opptrinn** (lengre vangeplanke 4,2/4,8 m)
 2. Genererer **sidetegning**, **vangetegning med kappmål**, **kappliste**, **innkjøpsliste** og **monteringsrekkefølge**
-3. Husker valget i `localStorage`
 
 ## Geometri
 
