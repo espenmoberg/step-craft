@@ -230,7 +230,7 @@ export const ASSEMBLY_STEPS = [
   "Kontroller høyde, diagonal A–F og vannrett span mot mål på stedet.",
   "Lag mal: rettvinklet trekant inntrinn × opptrinn (hypotenus = steg langs vange).",
   "Kapp og prøv én vange (fot nederst, lodd endekapp øverst — uten innkutt). Bruk den som mal for den andre.",
-  "Skru sideklosser fra utsiden gjennom vangen (A4 5×100, 4 per kloss).",
+  "Sideklosser: forside lodd under nesa (malens lodde side). Topp 244 mm vannrett bakover (ikke langs vangen), bak 45° lang flate oppe. Skru fra utsiden (A4 5×100, 4 per kloss).",
   "Sett foten på hellen. Øvre ende støttes mot topp/terreng (ingen fuglenebb). Vangene 1180 fra hverandre, like diagonaler.",
   "Grav og sett pæler rett utenfor vangene ved stolpe 1 og 3 (og venstre side). Bolt med 2× M10 låseskruer hver.",
   "Legg trinn med 8 mm luft mot vange. Forbor. Valgfritt: Ø6–8 drenhull over hver kloss.",
