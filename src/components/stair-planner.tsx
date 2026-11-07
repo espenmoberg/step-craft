@@ -18,6 +18,7 @@ import {
 } from "@/lib/materials";
 import { SideDrawing } from "@/components/side-drawing";
 import { StringerDrawing } from "@/components/stringer-drawing";
+import { TemplateDrawing } from "@/components/template-drawing";
 import {
   Card,
   CardContent,
@@ -130,6 +131,22 @@ export function StairPlanner() {
           </TabsList>
 
           <TabsContent value="tegninger" className="space-y-4">
+            <Card className="border-forest/15 bg-cream/90">
+              <CardHeader className="pb-2">
+                <CardTitle className="font-display text-xl text-forest">
+                  Trekantmal
+                </CardTitle>
+                <CardDescription>
+                  Inntrinn {params.g} × opptrinn {round1(geo.r)} mm — lag før du
+                  merker vangen.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white">
+                  <TemplateDrawing geo={geo} />
+                </div>
+              </CardContent>
+            </Card>
             <Card className="border-forest/15 bg-cream/90">
               <CardHeader className="pb-2">
                 <CardTitle className="font-display text-xl text-forest">
