@@ -49,10 +49,10 @@ export function TemplateDrawing({ geo }: Props) {
     y: (h1.y + h2.y) / 2 + ny * 22,
   };
 
-  // Angle label: inne i vinkelen, klar av kantene
+  // Angle label: inne i vinkelen, klar av hypotenus og bunnlinje
   const angLabel = {
-    x: B.x - 78,
-    y: B.y - 36,
+    x: A.x + gx * 0.55,
+    y: A.y - 52,
   };
 
   return (
