@@ -91,7 +91,7 @@ export function buildCutList(geo: StairGeometry): CutItem[] {
       impregnation: "AB",
       note: (() => {
         const b = blockDimsForStep(geo, 0);
-        return `Flatt, 48 høy. Topp ${Math.round(b.topMm)} / bunn ${Math.round(b.bottomMm)} mm, bak ${BLOCK_MITER_DEG}° (lang flate oppe) — bedre støtte for bakbord.`;
+        return `Kapp ferdig før montering: topp ${Math.round(b.topMm)} / bunn ${Math.round(b.bottomMm)}, bak ${BLOCK_MITER_DEG}° oppe. Forside ved nese, vater på topp, skru.`;
       })(),
     },
     {
@@ -227,14 +227,13 @@ export function buildShopList(geo: StairGeometry): ShopItem[] {
 }
 
 export const ASSEMBLY_STEPS = [
-  "Kontroller høyde, diagonal A–F og vannrett span mot mål på stedet.",
-  "Lag mal: rettvinklet trekant inntrinn × opptrinn (hypotenus = steg langs vange).",
-  "Kapp og prøv én vange (fot nederst, lodd endekapp øverst — uten innkutt). Bruk den som mal for den andre.",
-  "Sideklosser: forside lodd under nesa (malens lodde side). Topp 244 mm vannrett bakover (ikke langs vangen), bak 45° lang flate oppe. Skru fra utsiden (A4 5×100, 4 per kloss).",
-  "Sett foten på hellen. Øvre ende støttes mot topp/terreng (ingen fuglenebb). Vangene 1180 fra hverandre, like diagonaler.",
-  "Grav og sett pæler rett utenfor vangene ved stolpe 1 og 3 (og venstre side). Bolt med 2× M10 låseskruer hver.",
-  "Legg trinn med 8 mm luft mot vange. Forbor. Valgfritt: Ø6–8 drenhull over hver kloss.",
-  "Monter stolpe 2 og håndlist (900 loddrett over nesene). Olje alle kappflater.",
+  "Lag trekantmal (277 × 182). Merk neser langs overkant: første u 212, deretter hver 332 mm.",
+  "Kapp klosser ferdige: topp 244 / bunn 196, bak 45° (lang flate oppe).",
+  "Ved hver nese: forside av kloss ved nesa, vater på toppen, skru fra utsiden (4× A4 5×100). Prøv ett trinn — nesa 5 mm under overkant.",
+  "Kapp og prøv én vange (fot nederst, lodd ende øverst). Bruk den som mal for den andre.",
+  "Sett foten på hellen, øvre ende mot topp/terreng. Vangene 1180 fra hverandre, like diagonaler.",
+  "Pæler ved stolpe 1 og 3 (+ venstre). Bolt 2× M10 hver.",
+  "Legg trinn (8 mm luft, forbor). Stolpe 2 og håndlist. Olje kappflater.",
 ];
 
 export const DECISIONS = [
