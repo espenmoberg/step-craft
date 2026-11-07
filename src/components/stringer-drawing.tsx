@@ -83,20 +83,22 @@ export function StringerDrawing({ geo }: Props) {
   const ovVy = (v: number) => ovOy + v * ovScale;
 
   // Detail A: leave room left of the toe for A-label
-  const dA = { ox: 110, oy: 220, u0: -40, u1: 380, scale: 1 };
+  const thA = (geo.angleDeg * Math.PI) / 180;
+  const firstTreadEndU = noses[0] + params.d * Math.cos(thA);
+  const dA = { ox: 110, oy: 220, u0: -40, u1: firstTreadEndU + 40, scale: 1 };
   dA.scale = 360 / (dA.u1 - dA.u0);
   const dAUx = (u: number) => dA.ox + (u - dA.u0) * dA.scale;
   const dAVy = (v: number) => dA.oy + v * dA.scale;
 
-  // Vis E og F (vannrett topp: F ligger lenger ute langs underkant)
+  // Utsnittet må starte før øverste nese, ellers havner trinn og kloss utenfor vangen
   const dB = {
     ox: 50,
     oy: 470,
-    u0: Math.min(points.E.u, points.F.u) - 280,
+    u0: Math.min(noses[NT - 1], points.E.u, points.F.u) - 140,
     u1: Math.max(points.E.u, points.F.u) + 40,
     scale: 1,
   };
-  dB.scale = 400 / (dB.u1 - dB.u0);
+  dB.scale = 560 / (dB.u1 - dB.u0);
   const dBUx = (u: number) => dB.ox + (u - dB.u0) * dB.scale;
   const dBVy = (v: number) => dB.oy + v * dB.scale;
 
@@ -186,8 +188,8 @@ export function StringerDrawing({ geo }: Props) {
       <polygon
         points={pts([
           [dAUx(points.B.u), dAVy(0)],
-          [dAUx(360), dAVy(0)],
-          [dAUx(360), dAVy(W)],
+          [dAUx(dA.u1), dAVy(0)],
+          [dAUx(dA.u1), dAVy(W)],
           [dAUx(points.C.u), dAVy(W)],
           [dAUx(points.A.u), dAVy(points.A.v)],
         ])}
@@ -286,10 +288,10 @@ export function StringerDrawing({ geo }: Props) {
 
       <polygon
         points={pts([
-          [dBUx(dB.u0 + 30), dBVy(0)],
+          [dBUx(dB.u0), dBVy(0)],
           [dBUx(points.E.u), dBVy(0)],
           [dBUx(points.F.u), dBVy(W)],
-          [dBUx(dB.u0 + 30), dBVy(W)],
+          [dBUx(dB.u0), dBVy(W)],
         ])}
         fill="#fafafa"
         stroke={Ink.line}
