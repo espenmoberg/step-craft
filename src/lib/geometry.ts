@@ -24,7 +24,11 @@ export type StairParams = {
   t: number;
   /** Høyde på lodd kapp foran ved foten */
   FRONT: number;
-  /** Setelengde vannrett øverst (0 = ingen innkutt / fuglenebb) */
+  /**
+   * Setelengde for fuglenebb (0 = ingen innkutt).
+   * Toppenden kappes uansett vannrett i toppflatehøyde (rett over øverste trinn)
+   * når SEAT = 0 — da er E–F selve vannrettkuttet (ikke lodd ende).
+   */
   SEAT: number;
   /** Kloss toppflate fra nesa og bakover (vannrett); bak ende gjæres 45° */
   KL: number;
@@ -54,8 +58,15 @@ export type StairGeometry = {
   /** Verdenskordinater for tegning */
   world: {
     xf: number;
+    /** Underkant ved øvre vannrettkapp */
     xe: number;
+    /** Overkant ved øvre vannrettkapp */
+    xE: number;
+    /** Bakre ende av øverste trinnbord */
+    xTreadEnd: number;
+    /** Høyde på øvre vannrettkapp (= toppflate) */
     ys: number;
+    Ytop: number;
     xB: number;
     FRONT: number;
     noses: { x: number; y: number }[];
@@ -79,7 +90,7 @@ export const DEFAULT_PARAMS: StairParams = {
   W: 198,
   t: 5,
   FRONT: 100,
-  SEAT: 0, // dropper innkutt/fuglenebb øverst — bare lodd endekapp
+  SEAT: 0, // ingen fuglenebb — vannrett endekapp i toppflatehøyde
   KL: 244, // toppflate; bak 45° så bunn ≈ 196 — bedre støtte for bakbord
   stoneBase: 0,
 };
@@ -102,10 +113,16 @@ export function computeGeometry(params: StairParams): StairGeometry {
   const ybot = (x: number) => ytop(x) - W / c;
   const xf = (FRONT - ytop(0)) / k;
   const xb0 = (0 - ybot(0)) / k;
-  const xe = (NT - 1) * g + d;
-  const ys = ybot(xe);
-  // Med SEAT=0: ingen fuglenebb — G/H faller sammen med F (lodd ende).
-  const xB = xe - SEAT;
+  // Siste trinnbord slutter her (til info / tegning)
+  const xTreadEnd = (NT - 1) * g + d;
+
+  // Øvre ende: vannrett kapp i toppflatehøyde (rett over øverste trinn)
+  const Ytop = woodH;
+  const xE = (Ytop - r - t / c) / k; // overkant møter vannrett kapp
+  const xF = xE + W / s; // underkant møter samme vannrette kapp
+  // Valgfri fuglenebb (ikke brukt nå)
+  const xB = SEAT > 0 ? xE - SEAT : xE;
+  const ys = Ytop;
 
   const bc0 = (x: number, y: number): [number, number] => [
     (x - xf) * c + (y - FRONT) * s,
@@ -117,15 +134,16 @@ export function computeGeometry(params: StairParams): StairGeometry {
     return { u: u - U0, v };
   };
 
-  const F = bc(xe, ys);
+  const E = bc(xE, Ytop);
+  const F = bc(xF, Ytop);
   const points = {
     A: bc(xf, 0),
     B: bc(xf, FRONT),
     C: bc(xb0, 0),
     H: SEAT > 0 ? bc(xB, ybot(xB)) : F,
-    G: SEAT > 0 ? bc(xB, ys) : F,
+    G: SEAT > 0 ? bc(xB, Ytop) : F,
     F,
-    E: bc(xe, ytop(xe)),
+    E,
   };
 
   const noses = Array.from({ length: NT }, (_, i) => {
@@ -149,10 +167,10 @@ export function computeGeometry(params: StairParams): StairGeometry {
     NT,
     angleDeg: (th * 180) / Math.PI,
     formula: 2 * r + g,
-    stringerLength: points.E.u,
+    stringerLength: Math.max(points.E.u, points.F.u),
     diagonalAF: Math.hypot(points.F.u - points.A.u, points.F.v - points.A.v),
-    horizontalSpan: xe - xf,
-    seatBelowTop: woodH - ys,
+    horizontalSpan: xF - xf,
+    seatBelowTop: 0,
     treadFitsInW: d * s + 48 * c + t,
     // Med 45° bak: kritisk er bakre nedre hjørne (bunn = KL - 48)
     blockFitsInW: Math.max(0, KL - 48) * s + 96 * c + t,
@@ -163,10 +181,13 @@ export function computeGeometry(params: StairParams): StairGeometry {
     levelCutDeg: (th * 180) / Math.PI,
     world: {
       xf,
-      xe,
-      ys,
+      xe: xF,
+      xE,
+      xTreadEnd,
+      ys: Ytop,
       xB,
       FRONT,
+      Ytop,
       noses: worldNoses,
       posts,
       handrailLength,

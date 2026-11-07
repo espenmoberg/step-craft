@@ -88,7 +88,14 @@ export function StringerDrawing({ geo }: Props) {
   const dAUx = (u: number) => dA.ox + (u - dA.u0) * dA.scale;
   const dAVy = (v: number) => dA.oy + v * dA.scale;
 
-  const dB = { ox: 50, oy: 470, u0: L - 480, u1: L + 20, scale: 1 };
+  // Vis E og F (vannrett topp: F ligger lenger ute langs underkant)
+  const dB = {
+    ox: 50,
+    oy: 470,
+    u0: Math.min(points.E.u, points.F.u) - 280,
+    u1: Math.max(points.E.u, points.F.u) + 40,
+    scale: 1,
+  };
   dB.scale = 400 / (dB.u1 - dB.u0);
   const dBUx = (u: number) => dB.ox + (u - dB.u0) * dB.scale;
   const dBVy = (v: number) => dB.oy + v * dB.scale;
@@ -274,7 +281,7 @@ export function StringerDrawing({ geo }: Props) {
 
       {/* —— Detalj B —— */}
       <text x="24" y="448" fontSize={13} fontWeight={600} fill={Ink.text}>
-        Detalj B – øvre ende (lodd kapp, uten innkutt)
+        Detalj B – øvre ende (vannrett kapp)
       </text>
 
       <polygon
@@ -319,17 +326,16 @@ export function StringerDrawing({ geo }: Props) {
       <text x={dBUx(noses[NT - 1])} y={dB.oy - 8} fill={Ink.blue}>
         Nese {NT} · u {fmt0(noses[NT - 1])}
       </text>
-      <text x={dBUx(points.E.u) - 4} y={dB.oy - 8} textAnchor="end" fill={Ink.text}>
+      <text x={dBUx(points.E.u)} y={dB.oy - 8} textAnchor="middle" fill={Ink.text}>
         E · u {fmt0(points.E.u)}
       </text>
-      <text x={dBUx(points.F.u) + 4} y={dBVy(W) + 14} fill={Ink.text}>
+      <text x={dBUx(points.F.u)} y={dBVy(W) + 14} textAnchor="middle" fill={Ink.text}>
         F · u {fmt0(points.F.u)}
       </text>
 
       <text x="24" y={dB.oy + W * dB.scale + 32} fill={Ink.muted}>
-        Kapp: E–F lodd gjennom hele vangen (ingen sete/fuglenebb). Kloss topp{" "}
-        {fmt0(lastBlock.topMm)} / bunn {fmt0(lastBlock.bottomMm)} (samme som
-        øvrige).
+        Kapp: E–F vannrett i toppflatehøyde (rett over øverste trinn). Sagvinkel{" "}
+        {fmt1(geo.levelCutDeg)}° mot overkant. Ingen fuglenebb.
       </text>
 
       <text x="24" y="700" fill={Ink.muted} fontSize={11}>

@@ -307,7 +307,7 @@ export function StairPlanner() {
                   Montering
                 </CardTitle>
                 <CardDescription>
-                  Kort rekkefølge. Vangekapp (fot og lodd ende) tas med
+                  Kort rekkefølge. Vangekapp (fot og vannrett topp) tas med
                   stikksag / håndsirkelsag — ikke kappsag.
                 </CardDescription>
               </CardHeader>

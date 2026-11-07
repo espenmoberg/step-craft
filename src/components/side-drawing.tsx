@@ -28,8 +28,9 @@ export function SideDrawing({ geo }: Props) {
   const A: XY = { x: world.xf, y: stone };
   const B: XY = { x: world.xf, y: stone + world.FRONT };
   const C: XY = { x: xb0, y: stone };
-  const E: XY = { x: world.xe, y: stone + ytop(world.xe) };
-  const F: XY = { x: world.xe, y: stone + world.ys };
+  // Øvre ende: vannrett kapp i toppflatehøyde (E på overkant, F på underkant)
+  const E: XY = { x: world.xE, y: stone + world.Ytop };
+  const F: XY = { x: world.xe, y: stone + world.Ytop };
   const G: XY = { x: world.xB, y: stone + world.ys };
   const H: XY = { x: world.xB, y: stone + ybot(world.xB) };
   const hasSeat = params.SEAT > 0;

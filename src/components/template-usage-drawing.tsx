@@ -180,7 +180,7 @@ export function TemplateUsageDrawing({ geo }: Props) {
         Prøv ett trinnbord: nesa skal ligge 5 mm under overkant.
       </text>
       <text x="24" y="404" fill={Ink.muted} fontSize={11}>
-        Fotkapp: malens rette sider mot kanten (lodd + vannrett).
+        Vangekapp: malens rette sider gir lodd (fot) og vannrett (fot + topp).
       </text>
     </svg>
   );

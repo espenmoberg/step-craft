@@ -249,7 +249,7 @@ export function TemplateDrawing({ geo }: Props) {
         mm (første nese ca. u {fmt0(geo.noses[0])}).
       </text>
       <text x="24" y="442" fill={Ink.muted} fontSize={12}>
-        Samme mal brukes til lodd- og vannrett fotkapp.
+        Samme mal til lodd/vannrett fot — og vannrett toppkapp.
       </text>
     </svg>
   );
