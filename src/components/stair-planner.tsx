@@ -72,8 +72,9 @@ export function StairPlanner() {
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-forest/75 sm:text-base">
             33,4° og 3800 mm fra punkt B til øverste nese → 13 opptrinn à{" "}
             {round1(geo.r)} / inntrinn {params.g}, trinndybde {params.d}{" "}
-            (148+98). Vange {round0(geo.stringerLength)} mm — kjøp 4,2 eller 4,8
-            m (lagerplanken {STOCK_STRINGER_MM} mm er {round0(missing)} mm for
+            (148+98). Vange {round0(geo.stringerLength)} mm — kjøp{" "}
+            {geo.stringerLength > 4200 ? "4,8" : "4,2 eller 4,8"} m
+            (lagerplanken {STOCK_STRINGER_MM} mm er {round0(missing)} mm for
             kort). Skjøting frarådes.
           </p>
           <dl className="mt-5 grid grid-cols-2 gap-3 font-mono text-xs text-forest/75 sm:grid-cols-4">

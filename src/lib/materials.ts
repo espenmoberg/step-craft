@@ -156,7 +156,9 @@ export function buildShopList(geo: StairGeometry): ShopItem[] {
   return [
     {
       item: needLong
-        ? `Vangeplanke 48×198 CU-imp C24, 4,2 m eller 4,8 m`
+        ? stringer > 4200
+          ? `Vangeplanke 48×198 CU-imp C24, 4,8 m`
+          : `Vangeplanke 48×198 CU-imp C24, 4,2 m eller 4,8 m`
         : `Vangeplanke 48×198 CU-imp C24, 3,89 m`,
       qty: "2 stk",
       where: "Bergene Holm / Maxbo",
@@ -238,7 +240,7 @@ export const ASSEMBLY_STEPS = [
 
 export const DECISIONS = [
   "Lukkede endevanger (ikke sagtann), ingen midtvange",
-  "13 tre-opptrinn — kjøp lengre vange (4,2/4,8 m), ikke steinblokk nederst",
+  "13 tre-opptrinn — kjøp 4,8 m vange, ikke steinblokk nederst",
   "Vange 48×198, trinn 48×148 + 48×98 (dybde 250), 8 mm luft mot vange",
   "Sidekloss topp 244 / bunn 196 mm, bak 45° (lang flate oppe) for støtte til bakbord",
   "Fot vannrett nederst; topp vannrett kapp i toppflatehøyde (rett over øverste trinn, ingen fuglenebb)",
