@@ -1,6 +1,10 @@
 import type { StairGeometry } from "./geometry";
 import { round0 } from "./geometry";
-import { STANDARD_BLOCK_MM, blockLengthForStep } from "./blocks";
+import {
+  BLOCK_MITER_DEG,
+  blockDimsForStep,
+  blockLengthForStep,
+} from "./blocks";
 
 export type CutItem = {
   part: string;
@@ -85,7 +89,10 @@ export function buildCutList(geo: StairGeometry): CutItem[] {
       qty: blocks,
       lengthMm: blockLengthForStep(geo, 0),
       impregnation: "AB",
-      note: `Flatt, 48 høy, fra nesa og bakover. Standard ${STANDARD_BLOCK_MM} mm.`,
+      note: (() => {
+        const b = blockDimsForStep(geo, 0);
+        return `Flatt, 48 høy. Topp ${Math.round(b.topMm)} / bunn ${Math.round(b.bottomMm)} mm, bak ${BLOCK_MITER_DEG}° (lang flate oppe) — bedre støtte for bakbord.`;
+      })(),
     },
     {
       part: "Stolpe 1 og 3 (rekkverk + pæl)",
@@ -176,8 +183,9 @@ export function buildShopList(geo: StairGeometry): ShopItem[] {
     },
     {
       item: "Sideklossemateriale 48×73 eller 48×98 (kappes)",
-      qty: `${treads * 2} × ${geo.params.KL} mm`,
+      qty: `${treads * 2} × ca. ${geo.params.KL} mm (topp)`,
       where: "Maxbo",
+      note: `Kapp bak ${BLOCK_MITER_DEG}° — topp ${geo.params.KL} mm, bunn ca. ${geo.params.KL - 48} mm`,
     },
     {
       item: "Runde gjerdestolper Ø76, 1,74 m, klasse A",
@@ -233,6 +241,7 @@ export const DECISIONS = [
   "Lukkede endevanger (ikke sagtann), ingen midtvange",
   "13 tre-opptrinn — kjøp lengre vange (4,2/4,8 m), ikke steinblokk nederst",
   "Vange 48×198, trinn 48×148 + 48×98 (dybde 250), 8 mm luft mot vange",
+  "Sidekloss topp 244 / bunn 196 mm, bak 45° (lang flate oppe) for støtte til bakbord",
   "Fot vannrett nederst; øvre ende bare lodd kapp (ingen sete/innkutt)",
   "Pæler Ø76 klasse A i stedet for støp/nye heller",
   "Rekkverk kun høyre side (sett oppover)",

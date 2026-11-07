@@ -26,7 +26,7 @@ export type StairParams = {
   FRONT: number;
   /** Setelengde vannrett øverst (0 = ingen innkutt / fuglenebb) */
   SEAT: number;
-  /** Klosslengde fra nesa og bakover */
+  /** Kloss toppflate fra nesa og bakover (vannrett); bak ende gjæres 45° */
   KL: number;
   /** Ekstra steinblokk nederst (0 hvis alt i tre) */
   stoneBase: number;
@@ -80,7 +80,7 @@ export const DEFAULT_PARAMS: StairParams = {
   t: 5,
   FRONT: 100,
   SEAT: 0, // dropper innkutt/fuglenebb øverst — bare lodd endekapp
-  KL: 200,
+  KL: 244, // toppflate; bak 45° så bunn ≈ 196 — bedre støtte for bakbord
   stoneBase: 0,
 };
 
@@ -154,7 +154,8 @@ export function computeGeometry(params: StairParams): StairGeometry {
     horizontalSpan: xe - xf,
     seatBelowTop: woodH - ys,
     treadFitsInW: d * s + 48 * c + t,
-    blockFitsInW: KL * s + 96 * c + t,
+    // Med 45° bak: kritisk er bakre nedre hjørne (bunn = KL - 48)
+    blockFitsInW: Math.max(0, KL - 48) * s + 96 * c + t,
     points,
     noses,
     mal: { width: g, height: r, hypot: Math.hypot(g, r) },

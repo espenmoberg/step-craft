@@ -1,6 +1,7 @@
 "use client";
 
 import type { StairGeometry } from "@/lib/geometry";
+import { blockDimsForStep, BLOCK_MITER_DEG } from "@/lib/blocks";
 import { Ink, fmt0, fmt1, pts } from "@/lib/draw-style";
 
 type Props = { geo: StairGeometry };
@@ -137,13 +138,16 @@ export function SideDrawing({ geo }: Props) {
         strokeWidth={1.5}
       />
 
-      {/* Trinn + klosser */}
+      {/* Trinn + klosser (topp lengre, bak 45°) */}
       {noses.map((nose, i) => {
         const x0 = toX(nose.x);
         const y0 = toY(nose.y);
         const fw = frontBoard * scale;
         const bw = backBoard * scale;
         const gapW = gap * scale;
+        const dims = blockDimsForStep(geo, i);
+        const topW = dims.topMm * scale;
+        const botW = dims.bottomMm * scale;
         return (
           <g key={i}>
             <rect
@@ -166,11 +170,13 @@ export function SideDrawing({ geo }: Props) {
               stroke={Ink.blue}
               strokeWidth={1}
             />
-            <rect
-              x={x0}
-              y={y0 + treadH}
-              width={params.KL * scale}
-              height={blockH}
+            <polygon
+              points={pts([
+                [x0, y0 + treadH],
+                [x0 + topW, y0 + treadH],
+                [x0 + botW, y0 + treadH + blockH],
+                [x0, y0 + treadH + blockH],
+              ])}
               fill="none"
               stroke={Ink.line}
               strokeWidth={1}
@@ -294,7 +300,7 @@ export function SideDrawing({ geo }: Props) {
           x={toX(noses[Math.floor(NT * 0.6)].x + 40)}
           y={toY(noses[Math.floor(NT * 0.6)].y) + treadH + blockH + 14}
         >
-          Sidekloss 48×73 × {params.KL}
+          Sidekloss 48×73 topp {params.KL} · bak {BLOCK_MITER_DEG}°
         </text>
       </g>
 

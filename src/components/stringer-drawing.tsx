@@ -1,7 +1,12 @@
 "use client";
 
 import type { StairGeometry } from "@/lib/geometry";
-import { blockLengthForStep, STANDARD_BLOCK_MM } from "@/lib/blocks";
+import {
+  blockDimsForStep,
+  BLOCK_MITER_DEG,
+  STANDARD_BLOCK_TOP_MM,
+  type BlockDims,
+} from "@/lib/blocks";
 import { Ink, fmt0, fmt1, pts } from "@/lib/draw-style";
 
 type Props = { geo: StairGeometry };
@@ -32,7 +37,7 @@ function boardOutline(
 function treadAndBlock(
   geo: StairGeometry,
   uNose: number,
-  blockLen: number,
+  dims: BlockDims,
   ux: (u: number) => number,
   vy: (v: number) => number
 ) {
@@ -40,16 +45,18 @@ function treadAndBlock(
   const s = Math.sin(th);
   const c = Math.cos(th);
   const { d, t } = geo.params;
+  const { topMm, bottomMm } = dims;
   const tread = [
     [uNose, t],
     [uNose + d * c, t + d * s],
     [uNose + d * c - 48 * s, t + d * s + 48 * c],
     [uNose - 48 * s, t + 48 * c],
   ] as Array<[number, number]>;
+  // Vannrett kloss: topp topMm, bunn bottomMm, bak 45° (lang flate oppe)
   const block = [
     [uNose - 48 * s, t + 48 * c],
-    [uNose + blockLen * c - 48 * s, t + 48 * c + blockLen * s],
-    [uNose + blockLen * c - 96 * s, t + 96 * c + blockLen * s],
+    [uNose + topMm * c - 48 * s, t + 48 * c + topMm * s],
+    [uNose + bottomMm * c - 96 * s, t + 96 * c + bottomMm * s],
     [uNose - 96 * s, t + 96 * c],
   ] as Array<[number, number]>;
   return {
@@ -66,7 +73,8 @@ export function StringerDrawing({ geo }: Props) {
   const { params, points, noses, stringerLength, r, NT } = geo;
   const L = stringerLength;
   const W = params.W;
-  const lastBlock = blockLengthForStep(geo, NT - 1);
+  const block0 = blockDimsForStep(geo, 0);
+  const lastBlock = blockDimsForStep(geo, NT - 1);
 
   const ovScale = 640 / L;
   const ovOx = 50;
@@ -86,7 +94,6 @@ export function StringerDrawing({ geo }: Props) {
   const dBVy = (v: number) => dB.oy + v * dB.scale;
 
   const labelEvery = noses.length > 12 ? 2 : 1;
-  const block0 = blockLengthForStep(geo, 0);
 
   return (
     <svg
@@ -115,8 +122,8 @@ export function StringerDrawing({ geo }: Props) {
       />
 
       {noses.map((u, i) => {
-        const bl = blockLengthForStep(geo, i);
-        const { tread, block, nose } = treadAndBlock(geo, u, bl, ovUx, ovVy);
+        const dims = blockDimsForStep(geo, i);
+        const { tread, block, nose } = treadAndBlock(geo, u, dims, ovUx, ovVy);
         return (
           <g key={i}>
             <polygon
@@ -160,7 +167,8 @@ export function StringerDrawing({ geo }: Props) {
         {fmt0(L)}
       </text>
       <text x="50" y={ovOy + W * ovScale + 38} fill={Ink.muted} fontSize={11}>
-        Sidekloss: {block0} mm fra nesa (flatt, 48 høy) — samme på alle trinn
+        Sidekloss: topp {fmt0(block0.topMm)} / bunn {fmt0(block0.bottomMm)} mm,
+        bak {BLOCK_MITER_DEG}° — samme på alle trinn
       </text>
 
       {/* —— Detalj A —— */}
@@ -259,7 +267,8 @@ export function StringerDrawing({ geo }: Props) {
       </text>
 
       <text x="24" y={dA.oy + W * dA.scale + 34} fill={Ink.muted}>
-        Kapp: B–A lodd · A–C vannrett (fot). Kloss {block0} mm fra nesa, 48 under
+        Kapp: B–A lodd · A–C vannrett (fot). Kloss topp {fmt0(block0.topMm)} /
+        bunn {fmt0(block0.bottomMm)}, bak {BLOCK_MITER_DEG}°, 48 under
         trinnoverside.
       </text>
 
@@ -318,14 +327,15 @@ export function StringerDrawing({ geo }: Props) {
       </text>
 
       <text x="24" y={dB.oy + W * dB.scale + 32} fill={Ink.muted}>
-        Kapp: E–F lodd gjennom hele vangen (ingen sete/fuglenebb). Kloss{" "}
-        {lastBlock} mm (samme som øvrige).
+        Kapp: E–F lodd gjennom hele vangen (ingen sete/fuglenebb). Kloss topp{" "}
+        {fmt0(lastBlock.topMm)} / bunn {fmt0(lastBlock.bottomMm)} (samme som
+        øvrige).
       </text>
 
       <text x="24" y="700" fill={Ink.muted} fontSize={11}>
         Mal: {params.g} × {fmt1(r)} (hyp. {fmt1(geo.mal.hypot)}) · lodd{" "}
         {fmt1(geo.plumbCutDeg)}° · vannrett {fmt1(geo.levelCutDeg)}° · kloss{" "}
-        {STANDARD_BLOCK_MM} mm standard
+        topp {STANDARD_BLOCK_TOP_MM} mm, bak {BLOCK_MITER_DEG}°
       </text>
     </svg>
   );
