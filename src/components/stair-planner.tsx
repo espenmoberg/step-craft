@@ -19,6 +19,7 @@ import {
 import { SideDrawing } from "@/components/side-drawing";
 import { StringerDrawing } from "@/components/stringer-drawing";
 import { TemplateDrawing } from "@/components/template-drawing";
+import { TemplateUsageDrawing } from "@/components/template-usage-drawing";
 import {
   Card,
   CardContent,
@@ -141,9 +142,12 @@ export function StairPlanner() {
                   merker vangen.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white">
                   <TemplateDrawing geo={geo} />
+                </div>
+                <div className="overflow-x-auto rounded-lg border border-forest/10 bg-white">
+                  <TemplateUsageDrawing geo={geo} />
                 </div>
               </CardContent>
             </Card>
